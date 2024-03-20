@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  main:
+    web-application-type: reactive
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: product-service
+          uri: ${PRODUCT_SERVICE_URL:http://localhost:8081}
+          predicates:
+            - Path=${PRODUCT_SERVICE_PATH:/product-service/**}
+          filters:
+            - RewritePath=${PRODUCT_SERVICE_PATH:/product-service/(?<path>.*)}, /$\{path}
+        - id: order-service
+          uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+          predicates:
+            - Path=${ORDER_SERVICE_PATH:/order-service/**}
+          filters:
+            - RewritePath=${ORDER_SERVICE_PATH:/order-service/(?<path>.*)}, /$\{path}
+        - id: inventory-service
+          uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+          predicates:
+            - Path=${INVENTORY_SERVICE_PATH:/inventory-service/**}
+          filters:
+            - RewritePath=${INVENTORY_SERVICE_PATH:/inventory-service/(?<path>.*)}, /$\{path}
+        - id: discovery-server
+          uri: ${CART_SERVICE_URL:http://localhost:8084}
+          predicates:
+            - Path=${CART_SERVICE_PATH:/eureka/**}
+          filters:
+            - RewritePath=${CART_SERVICE_PATH:/eureka/(?<path>.*)}, /$\{path}\
