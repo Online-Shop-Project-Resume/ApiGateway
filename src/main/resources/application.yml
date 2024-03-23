@@ -10,26 +10,43 @@ spring:
     gateway:
       routes:
         - id: product-service
-          uri: ${PRODUCT_SERVICE_URL:http://localhost:8081}
+          uri: ${PRODUCT_SERVICE_URL:lb://PRODUCT-SERVICE}
           predicates:
             - Path=${PRODUCT_SERVICE_PATH:/product-service/**}
           filters:
             - RewritePath=${PRODUCT_SERVICE_PATH:/product-service/(?<path>.*)}, /$\{path}
         - id: order-service
-          uri: ${ORDER_SERVICE_URL:http://localhost:8082}
+          uri: ${ORDER_SERVICE_URL:lb://ORDER-SERVICE}
           predicates:
             - Path=${ORDER_SERVICE_PATH:/order-service/**}
           filters:
             - RewritePath=${ORDER_SERVICE_PATH:/order-service/(?<path>.*)}, /$\{path}
         - id: inventory-service
-          uri: ${INVENTORY_SERVICE_URL:http://localhost:8083}
+          uri: ${INVENTORY_SERVICE_URL:lb://INVENTORY-SERVICE}
           predicates:
             - Path=${INVENTORY_SERVICE_PATH:/inventory-service/**}
           filters:
             - RewritePath=${INVENTORY_SERVICE_PATH:/inventory-service/(?<path>.*)}, /$\{path}
         - id: discovery-server
-          uri: ${CART_SERVICE_URL:http://localhost:8084}
+          uri: ${CART_SERVICE_URL:lb://CART-SERVICE}
           predicates:
             - Path=${CART_SERVICE_PATH:/eureka/**}
           filters:
             - RewritePath=${CART_SERVICE_PATH:/eureka/(?<path>.*)}, /$\{path}\
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+  tracing:
+    sampling:
+      probability: 1.0
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka}
