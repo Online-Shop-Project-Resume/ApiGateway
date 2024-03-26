@@ -2,8 +2,6 @@ server:
   port: 8080
 
 spring:
-  profiles:
-    active: ${SPRING_PROFILE:default}
   main:
     web-application-type: reactive
   application:
@@ -37,7 +35,7 @@ spring:
             - RewritePath=${CART_SERVICE_PATH:/cart-service/(?<path>.*)}, /$\{path}\
 
         - id: discovery-server-static
-          uri: ${DISCOVERY_SERVICE_URL:http://localhost:8761}
+          uri: ${DISCOVERY_SERVICE_URL:http://discovery-server:8761}
           predicates:
             - Path=${DISCOVERY_SERVICE_PATH:/eureka/**}
           filters:
@@ -56,8 +54,8 @@ management:
       probability: 1.0
   zipkin:
     tracing:
-      endpoint: ${ZIPKIN_URL:http://localhost:9411/api/v2/spans}
+      endpoint: http://zipkin:9411/api/v2/spans
 eureka:
   client:
     serviceUrl:
-      defaultZone: ${DISCOVERY_SERVER_URL:http://localhost:8761/eureka}
+      defaultZone: http://discovery-server:8761/eureka
